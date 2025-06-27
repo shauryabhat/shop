@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S and M Salon</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .item { margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 10px; max-width: 400px; }
+    #cart { margin-top: 30px; border-top: 2px solid black; padding-top: 20px; }
+    .bill-breakdown { margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 8px; }
+    button.remove-btn { margin-left: 10px; background: red; color: white; border: none; padding: 2px 5px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Book Your Services - S and M Salon</h1>
+
+  <form id="order-form" action="https://formspree.io/f/xyzjbvbv" method="POST" onsubmit="return validatePhone()">
+    <div>
+      <h3>Who are you to Shaurya?</h3>
+      <label><select id="relation" name="relation" required>
+        <option value="">--Select--</option>
+        <option value="Mamu">Mamu</option>
+        <option value="Mami">Mami</option>
+        <option value="Mummy">Mummy</option>
+        <option value="Nanu">Nanu</option>
+        <option value="Nani">Nani</option>
+        <option value="Papa">Papa</option>
+        <option value="Didi">Didi</option>
+      </select></label><br><br>
+    </div>
+
+    
+    <div class="item"><p>Foot Massage - ₹10</p><button type="button" onclick="addToCart('Foot Massage', 10)">Add to Cart</button></div>
+    <div class="item"><p>Leg Massage - ₹30</p><button type="button" onclick="addToCart('Leg Massage', 30)">Add to Cart</button></div>
+    <div class="item"><p>Full Head Massage - ₹20</p><button type="button" onclick="addToCart('Full Head Massage', 20)">Add to Cart</button></div>
+    <div class="item"><p>Hair Oiling - ₹30</p><button type="button" onclick="addToCart('Hair Oiling', 30)">Add to Cart</button></div>
+    <div class="item"><p>Hair Styling & Cooling - ₹30</p><button type="button" onclick="addToCart('Hair Styling & Cooling', 30)">Add to Cart</button></div>
+    <div class="item"><p>Hand Massage - ₹20</p><button type="button" onclick="addToCart('Hand Massage', 20)">Add to Cart</button></div>
+    <div class="item"><p>Face Cleaning - ₹20</p><button type="button" onclick="addToCart('Face Cleaning', 20)">Add to Cart</button></div>
+    <div class="item"><p>Leg Cleanse - ₹20</p><button type="button" onclick="addToCart('Leg Cleanse', 20)">Add to Cart</button></div>
+  </div>
+
+  
+    <div>
+      <h3>Who are you to Shaurya?</h3>
+      <label><select id="relation" name="relation" required>
+        <option value="">--Select--</option>
+        <option value="Mamu">Mamu</option>
+        <option value="Mami">Mami</option>
+        <option value="Mummy">Mummy</option>
+        <option value="Nanu">Nanu</option>
+        <option value="Nani">Nani</option>
+        <option value="Papa">Papa</option>
+        <option value="Didi">Didi</option>
+      </select></label><br><br>
+    </div>
+    $1
+</form>
+      <div id="cart">
+      <h2>Selected Services</h2>
+      <ul id="cart-items"></ul>
+      <div class="bill-breakdown">
+        <h4>Itemized Bill:</h4>
+        <pre id="bill-details"></pre>
+      </div>
+      <p><strong>Subtotal: ₹<span id="subtotal">0</span></strong></p>
+      <p>+ 10% Service Charge: ₹<span id="service">0</span></p>
+      <h3>Total: ₹<span id="total">0</span></h3>
+      <input type="hidden" name="order" id="order-summary">
+      <input type="hidden" name="total" id="order-total">
+    </div>
+$1
+
+  <script>
+  const cart = [];
+
+  function addToCart(item, price) {
+    cart.push({ item, price });
+    updateCart();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+  }
+
+  function updateCart() {
+    const relation = document.getElementById('relation')?.value || '';
+    const cartItems = document.getElementById('cart-items');
+    const subtotalEl = document.getElementById('subtotal');
+    const serviceEl = document.getElementById('service');
+    const totalEl = document.getElementById('total');
+    const billDetailsEl = document.getElementById('bill-details');
+    const orderSummaryInput = document.getElementById('order-summary');
+    const orderTotalInput = document.getElementById('order-total');
+
+    cartItems.innerHTML = '';
+    let subtotal = 0;
+    let billBreakdown = '';
+
+    cart.forEach((entry, index) => {
+      let price = entry.price;
+      let extraNote = '';
+      if (relation === 'Mamu' && (entry.item === 'Foot Massage' || entry.item === 'Leg Cleanse')) {
+        price = 40;
+        extraNote = ' (extra money for dirty feet)';
+      }
+      const li = document.createElement('li');
+      li.textContent = `${entry.item} - ₹${price}${extraNote}`;
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.className = 'remove-btn';
+      removeBtn.onclick = () => removeFromCart(index);
+      li.appendChild(removeBtn);
+      cartItems.appendChild(li);
+      subtotal += price;
+      billBreakdown += `${entry.item} - ₹${price}${extraNote}
+`;
+    });
+
+    const service = subtotal * 0.10;
+    const total = subtotal + service;
+
+    subtotalEl.textContent = subtotal.toFixed(2);
+    serviceEl.textContent = service.toFixed(2);
+    totalEl.textContent = total.toFixed(2);
+
+    billDetailsEl.textContent = billBreakdown;
+    orderSummaryInput.value = billBreakdown.trim();
+    orderTotalInput.value = total.toFixed(2);
+  }
+
+  function validatePhone() {
+    const phone = document.getElementById('phone').value;
+    if (!/^[0-9]{10}$/.test(phone)) {
+      alert("Phone number must be exactly 10 digits.");
+      return false;
+    }
+    const digitCounts = {};
+    for (let digit of phone) {
+      digitCounts[digit] = (digitCounts[digit] || 0) + 1;
+      if (digitCounts[digit] > 8) {
+        alert("No digit should be repeated more than 8 times in the phone number.");
+        return false;
+      }
+    }
+    return true;
+  }
+</script>
+</body>
+</html>
