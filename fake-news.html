@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake News Detector</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h2 { color: #333; }
+    textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+    #result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h2>🕵️ Fake News Detector</h2>
+  <p>Paste any news claim below. We'll check it against real-time web sources and give you a result.</p>
+  <textarea id="newsInput" placeholder="e.g. India and Pakistan declare war without ceasefire..."></textarea><br>
+  <button onclick="checkFakeNews()">Check</button>
+  <div id="result">Result will appear here.</div>
+
+  <script>
+    async function checkFakeNews() {
+      const query = document.getElementById("newsInput").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!query) {
+        resultDiv.innerHTML = "❗ Please enter a news claim.";
+        return;
+      }
+
+      resultDiv.innerHTML = "🔎 Checking...";
+
+      // Use DuckDuckGo or Bing as fallback (no API key needed)
+      const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data && data.AbstractText) {
+          resultDiv.innerHTML = `✅ Likely Real: <br><em>${data.AbstractText}</em>`;
+        } else {
+          resultDiv.innerHTML = "❌ No match found on trusted sources. This news may be fake or unverified.";
+        }
+      } catch (error) {
+        resultDiv.innerHTML = "⚠️ Error checking the news. Try again later.";
+      }
+    }
+  </script>
+</body>
+</html>
